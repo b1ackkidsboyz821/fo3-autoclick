@@ -1,0 +1,50 @@
+[
+  {
+    "name": "จำลองการแข่ง",
+    "file": "298952bfa1.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true
+  },
+  {
+    "name": "ผลแข่ง",
+    "file": "6f3ffd7cc5.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true
+  },
+  {
+    "name": "ต่อไป",
+    "file": "0161d40238.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true
+  },
+  {
+    "name": "สุ่มเลือก",
+    "file": "c18d3b3beb.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true
+  },
+  {
+    "name": "ต่อไปสอง",
+    "file": "86eb34c5b1.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true
+  },
+  {
+    "name": "ต่อไปสาม",
+    "file": "eaf9a14f17.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": true,
+    "enabled": true
+  }
+]

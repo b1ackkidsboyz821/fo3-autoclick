@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Manager Raking",
+    "file": "0e3bc0ab39.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true
+  }
+]
