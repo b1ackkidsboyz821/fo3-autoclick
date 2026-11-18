@@ -336,6 +336,29 @@ def space_foreground(hwnd):
     return sent == 2
 
 
+def space_state(hwnd, hold=0.25):
+    """Space without touching focus: the game reads keys with GetKeyboardState,
+    the key table of its window thread. Join that thread's input state
+    (AttachThreadInput shares the table), mark Space down, wait a few frames,
+    mark it up. Needs admin, like every other key sent to the elevated game."""
+    game_tid = win32process.GetWindowThreadProcessId(hwnd)[0]
+    me = kernel32.GetCurrentThreadId()
+    if not game_tid or not user32.AttachThreadInput(me, game_tid, True):
+        return False
+    try:
+        keys = (ctypes.c_ubyte * 256)()
+        user32.GetKeyboardState(keys)
+        keys[VK_SPACE] = 0x80
+        user32.SetKeyboardState(keys)
+        time.sleep(hold)
+        user32.GetKeyboardState(keys)
+        keys[VK_SPACE] = 0
+        user32.SetKeyboardState(keys)
+    finally:
+        user32.AttachThreadInput(me, game_tid, False)
+    return True
+
+
 def space_flash(hwnd):
     """Space for background mode: the game reads the keyboard only while it has
     focus (posted WM_KEYDOWN is ignored), so bring it forward and press a real

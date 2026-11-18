@@ -100,8 +100,11 @@ class Bot(threading.Thread):
                 self.emit("log", "โปรแกรมไม่ได้รันแบบ Admin — เกมจะไม่รับปุ่ม Space "
                                  "กด “เปิดใหม่แบบ Admin” มุมขวาบน")
             if mode == "background":
-                if space:
-                    # posted keys never reach the game's keyboard reader: borrow focus
+                if space and repeats < 3 and gamewin.space_state(hwnd):
+                    pass   # pressed in the game's key table, focus untouched
+                elif space:
+                    # still on the same screen: borrow focus for a real key press
+                    self.emit("log", "กด Space แบบไม่ดึงจอไม่ได้ผล — ดึงเกมขึ้นมากดแทน")
                     if not gamewin.space_flash(hwnd):
                         self.emit("log", "กด Space ไม่ได้: ดึงหน้าต่างเกมขึ้นมาข้างหน้าไม่สำเร็จ "
                                          "(หรือเกมรันแบบ Admin แต่โปรแกรมไม่ใช่)")
