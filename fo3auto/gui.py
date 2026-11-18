@@ -314,16 +314,45 @@ class App:
         self.start_btn = ttk.Button(root, text="▶ เริ่มทำงาน (F8)", style="Big.TButton", command=self.toggle)
         self.start_btn.pack(fill="x", **pad)
 
-        self.log = tk.Text(root, height=7, state="disabled", font=(FONT, 9), wrap="word")
+        # read-only but selectable: a disabled Text takes no focus, so Ctrl+C did nothing
+        self.log = tk.Text(root, height=7, font=(FONT, 9), wrap="word")
         self.log.pack(fill="both", expand=True, padx=12, pady=(0, 12))
+        self.log.bind("<Key>", self._log_key)
+        self.log.bind("<<Paste>>", lambda e: "break")
+        self.log.bind("<<Cut>>", lambda e: "break")
+        menu = tk.Menu(self.log, tearoff=0)
+        menu.add_command(label="คัดลอก", command=lambda: self._copy_log(False))
+        menu.add_command(label="คัดลอกทั้งหมด", command=lambda: self._copy_log(True))
+        self.log.bind("<Button-3>", lambda e: menu.tk_popup(e.x_root, e.y_root))
 
     # ---------- helpers ----------
     def write_log(self, text):
-        self.log.configure(state="normal")
         self.log.insert("end", f"{time.strftime('%H:%M:%S')}  {text}\n")
         self.log.delete("1.0", "end-300l")
         self.log.see("end")
-        self.log.configure(state="disabled")
+
+    def _log_key(self, e):
+        """Only copy, select-all and moving around; nothing that edits the log."""
+        key = e.keysym.lower()
+        if e.state & 0x4 and key in ("c", "insert"):
+            return None
+        if e.state & 0x4 and key == "a":
+            self.log.tag_add("sel", "1.0", "end-1c")
+            return "break"
+        if e.keysym in ("Left", "Right", "Up", "Down", "Home", "End", "Prior", "Next"):
+            return None
+        return "break"
+
+    def _copy_log(self, everything):
+        if everything:
+            text = self.log.get("1.0", "end-1c")
+        else:
+            try:
+                text = self.log.get("sel.first", "sel.last")
+            except tk.TclError:
+                return
+        self.root.clipboard_clear()
+        self.root.clipboard_append(text)
 
     def refresh_list(self):
         selected = self.selected_name()
