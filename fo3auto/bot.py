@@ -18,6 +18,7 @@ class Bot(threading.Thread):
         self.settings = dict(settings)
         self.emit = emit              # emit(kind, value) -> GUI queue
         self.log_dir = Path(log_dir)
+        self._warned_admin = False
         self.stop_event = threading.Event()
         self.rounds = 0
 
@@ -92,6 +93,12 @@ class Bot(threading.Thread):
                                  "ถ้าเกมไม่รับคลิก ลองเปลี่ยนวิธีคลิกเป็น “คลิกจริง”")
 
             space = tpl.action == "space"   # some screens skip only on Space, not a click
+            if space and not gamewin.is_admin() and not self._warned_admin:
+                # the game runs elevated: Windows drops keys from a non-admin app
+                # silently (SendInput still reports success)
+                self._warned_admin = True
+                self.emit("log", "โปรแกรมไม่ได้รันแบบ Admin — เกมจะไม่รับปุ่ม Space "
+                                 "กด “เปิดใหม่แบบ Admin” มุมขวาบน")
             if mode == "background":
                 if space:
                     # posted keys never reach the game's keyboard reader: borrow focus
