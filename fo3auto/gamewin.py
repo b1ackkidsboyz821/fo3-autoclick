@@ -333,19 +333,9 @@ def space_foreground(hwnd):
 
 def space_flash(hwnd):
     """Space for background mode: the game reads the keyboard only while it has
-    focus (posted WM_KEYDOWN is ignored), so hand it focus for a moment, press a
-    real Space, then give focus back to the window that had it."""
-    prev = user32.GetForegroundWindow()
-    if prev == hwnd:
-        return space_foreground(hwnd)
-    ok = space_foreground(hwnd)
-    if prev and win32gui.IsWindow(prev):
-        time.sleep(0.05)
-        try:
-            win32gui.SetForegroundWindow(prev)
-        except Exception:
-            pass
-    return ok
+    focus (posted WM_KEYDOWN is ignored), so bring it forward and press a real
+    Space. Focus stays on the game: handing it back made the screen flip."""
+    return space_foreground(hwnd)
 
 
 def click_foreground(hwnd, x, y):
