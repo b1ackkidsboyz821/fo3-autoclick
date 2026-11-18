@@ -101,7 +101,9 @@ class Bot(threading.Thread):
                 # a real click would pass through the hidden window
                 return "โหมดคลิกจริงใช้กับเกมที่ซ่อนอยู่ไม่ได้ — เอาติ๊ก “ซ่อนหน้าต่างเกม” ออก"
             elif space:
-                gamewin.space_foreground(hwnd)
+                if not gamewin.space_foreground(hwnd):
+                    self.emit("log", "กด Space ไม่ได้: ดึงหน้าต่างเกมขึ้นมาข้างหน้าไม่สำเร็จ "
+                                     "(หรือเกมรันแบบ Admin แต่โปรแกรมไม่ใช่)")
             else:
                 gamewin.click_foreground(hwnd, x, y)
             self.emit("status", f"กด: {tpl.name}")

@@ -281,17 +281,54 @@ def space_background(hwnd):
     win32gui.PostMessage(hwnd, win32con.WM_KEYUP, VK_SPACE, up)
 
 
-def space_foreground(hwnd):
-    """Real Space key: bring the window forward and press it (games that read the
-    keyboard directly ignore posted keys)."""
+class _KEYBDINPUT(ctypes.Structure):
+    _fields_ = [("wVk", wintypes.WORD), ("wScan", wintypes.WORD), ("dwFlags", wintypes.DWORD),
+                ("time", wintypes.DWORD), ("dwExtraInfo", ctypes.c_size_t)]
+
+
+class _INPUT(ctypes.Structure):
+    class _U(ctypes.Union):
+        # MOUSEINPUT is the biggest member: pad the union to its size
+        _fields_ = [("ki", _KEYBDINPUT), ("pad", ctypes.c_byte * 32)]
+    _anonymous_ = ("u",)
+    _fields_ = [("type", wintypes.DWORD), ("u", _U)]
+
+
+INPUT_KEYBOARD, KEYEVENTF_SCANCODE, KEYEVENTF_KEYUP = 1, 0x0008, 0x0002
+
+
+def _send_scan(scan, up):
+    inp = _INPUT(type=INPUT_KEYBOARD)
+    inp.ki = _KEYBDINPUT(0, scan, KEYEVENTF_SCANCODE | (KEYEVENTF_KEYUP if up else 0), 0, 0)
+    return user32.SendInput(1, ctypes.byref(inp), ctypes.sizeof(_INPUT))
+
+
+def bring_forward(hwnd):
+    """Make the game the foreground window; True when it really is. Windows refuses
+    SetForegroundWindow from a background app unless a key was just pressed, so
+    tap Alt first (the usual workaround)."""
+    if user32.GetForegroundWindow() == hwnd:
+        return True
+    win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
     try:
         win32gui.SetForegroundWindow(hwnd)
     except Exception:
         pass
-    time.sleep(0.08)
-    win32api.keybd_event(VK_SPACE, SC_SPACE, 0, 0)
-    time.sleep(0.06)
-    win32api.keybd_event(VK_SPACE, SC_SPACE, win32con.KEYEVENTF_KEYUP, 0)
+    time.sleep(0.15)
+    return user32.GetForegroundWindow() == hwnd
+
+
+def space_foreground(hwnd):
+    """Real Space key as a hardware scan code (what DirectInput games read), held
+    long enough for a game that polls the keyboard once a frame. False when the
+    game could not be brought forward (the key would land in another window)."""
+    if not bring_forward(hwnd):
+        return False
+    sent = _send_scan(SC_SPACE, False)
+    time.sleep(0.12)
+    sent += _send_scan(SC_SPACE, True)
+    return sent == 2
 
 
 def click_foreground(hwnd, x, y):
