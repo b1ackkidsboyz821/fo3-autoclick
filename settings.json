@@ -1,7 +1,7 @@
 {
   "process": "fifazf",
-  "max_rounds": 10,
-  "unlimited": true,
+  "max_rounds": 150,
+  "unlimited": false,
   "click_mode": "background",
   "interval": 0.6,
   "after_click": 1.0,

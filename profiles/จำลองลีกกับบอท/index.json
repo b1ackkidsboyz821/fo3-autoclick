@@ -1,5 +1,22 @@
 [
   {
+    "name": "ยอมรับต่อสัญญา",
+    "file": "201e2613f8.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      759,
+      513,
+      842,
+      531
+    ],
+    "base_w": 1600,
+    "local": false
+  },
+  {
     "name": "ต่อสัญญานักเตะ",
     "file": "79218f76b8.png",
     "base_h": 900,
@@ -15,23 +32,6 @@
     ],
     "base_w": 1600,
     "local": false
-  },
-  {
-    "name": "ยอมรับต่อสัญญา",
-    "file": "201e2613f8.png",
-    "base_h": 900,
-    "threshold": 0.85,
-    "count_round": false,
-    "enabled": true,
-    "action": "click",
-    "box": [
-      759,
-      513,
-      842,
-      531
-    ],
-    "base_w": 1600,
-    "local": true
   },
   {
     "name": "จำลองการแข่ง",
@@ -137,6 +137,6 @@
       738
     ],
     "base_w": 1600,
-    "local": true
+    "local": false
   }
 ]
