@@ -94,7 +94,10 @@ class Bot(threading.Thread):
             space = tpl.action == "space"   # some screens skip only on Space, not a click
             if mode == "background":
                 if space:
-                    gamewin.space_background(hwnd)
+                    # posted keys never reach the game's keyboard reader: borrow focus
+                    if not gamewin.space_flash(hwnd):
+                        self.emit("log", "กด Space ไม่ได้: ดึงหน้าต่างเกมขึ้นมาข้างหน้าไม่สำเร็จ "
+                                         "(หรือเกมรันแบบ Admin แต่โปรแกรมไม่ใช่)")
                 else:
                     gamewin.click_background(hwnd, x, y)
             elif gamewin.is_hidden(hwnd):

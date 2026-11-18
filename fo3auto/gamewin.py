@@ -331,6 +331,23 @@ def space_foreground(hwnd):
     return sent == 2
 
 
+def space_flash(hwnd):
+    """Space for background mode: the game reads the keyboard only while it has
+    focus (posted WM_KEYDOWN is ignored), so hand it focus for a moment, press a
+    real Space, then give focus back to the window that had it."""
+    prev = user32.GetForegroundWindow()
+    if prev == hwnd:
+        return space_foreground(hwnd)
+    ok = space_foreground(hwnd)
+    if prev and win32gui.IsWindow(prev):
+        time.sleep(0.05)
+        try:
+            win32gui.SetForegroundWindow(prev)
+        except Exception:
+            pass
+    return ok
+
+
 def click_foreground(hwnd, x, y):
     """Real click: bring the window forward, click, put the cursor back."""
     sx, sy = win32gui.ClientToScreen(hwnd, (int(x), int(y)))
