@@ -24,6 +24,7 @@ from .gui import DEFAULTS, FIRST_PROFILE, hotkey_loop
 from .matcher import TemplateStore, imread
 
 UI = Path(__file__).resolve().parent / "ui" / "index.html"
+ICON = UI.with_name("icon.ico")   # made from logo.png
 BAD_NAME = re.compile(r'[\\/:*?"<>|]')
 
 
@@ -396,12 +397,27 @@ class Api:
         gamewin.stop_capture()
 
 
+def set_icon(title):
+    """WinForms pywebview ignores icon=, so put logo.png's icon on the window ourselves."""
+    import win32con
+    import win32gui
+    hwnd = win32gui.FindWindow(None, title)
+    if not hwnd or not ICON.exists():
+        return
+    for which, size in ((win32con.ICON_BIG, 256), (win32con.ICON_SMALL, 32)):
+        icon = win32gui.LoadImage(0, str(ICON), win32con.IMAGE_ICON, size, size, win32con.LR_LOADFROMFILE)
+        win32gui.SendMessage(hwnd, win32con.WM_SETICON, which, icon)
+
+
 def main(base_dir):
     gamewin.set_dpi_aware()
+    # own taskbar button (and icon) instead of python's
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("ProjectFO3TH.AutoClicker")
     api = Api(base_dir)
     window = webview.create_window("FO3 Auto Clicker", url=str(UI), js_api=api,
                                    width=1080, height=780, min_size=(760, 600),
                                    background_color="#0b1410")
     window.events.closing += api._on_closing
+    window.events.shown += lambda: set_icon("FO3 Auto Clicker")
     window.events.loaded += lambda: api._attach(window) if api._window is None else None
-    webview.start(gui="edgechromium", debug="--debug" in sys.argv)
+    webview.start(gui="edgechromium", debug="--debug" in sys.argv, icon=str(ICON))
