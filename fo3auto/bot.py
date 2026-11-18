@@ -91,15 +91,22 @@ class Bot(threading.Thread):
                 self.emit("log", f"กด “{tpl.name}” {HINT_AFTER} ครั้งแล้วจอไม่เปลี่ยน — "
                                  "ถ้าเกมไม่รับคลิก ลองเปลี่ยนวิธีคลิกเป็น “คลิกจริง”")
 
+            space = tpl.action == "space"   # some screens skip only on Space, not a click
             if mode == "background":
-                gamewin.click_background(hwnd, x, y)
+                if space:
+                    gamewin.space_background(hwnd)
+                else:
+                    gamewin.click_background(hwnd, x, y)
             elif gamewin.is_hidden(hwnd):
                 # a real click would pass through the hidden window
                 return "โหมดคลิกจริงใช้กับเกมที่ซ่อนอยู่ไม่ได้ — เอาติ๊ก “ซ่อนหน้าต่างเกม” ออก"
+            elif space:
+                gamewin.space_foreground(hwnd)
             else:
                 gamewin.click_foreground(hwnd, x, y)
             self.emit("status", f"กด: {tpl.name}")
-            self.emit("log", f"กด {tpl.name} ({score:.2f}) ที่ {x},{y}")
+            self.emit("log", f"กด Space ที่ {tpl.name} ({score:.2f})" if space
+                      else f"กด {tpl.name} ({score:.2f}) ที่ {x},{y}")
             if tpl.once:
                 clicked_once.add(tpl.name)
             else:

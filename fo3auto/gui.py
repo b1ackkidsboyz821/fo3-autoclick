@@ -34,6 +34,7 @@ DEFAULTS = {
 }
 FIRST_PROFILE = "จำลองลีกกับบอท"
 MODES = {"เบื้องหลัง (ไม่ขยับเมาส์)": "background", "คลิกจริง (ขยับเมาส์)": "foreground"}
+ACTION_LABELS = {"click": "กด", "space": "Space", "stop": "หยุดบอท"}  # "เมื่อเจอ" column
 
 
 def hotkey_loop(callback):
@@ -305,7 +306,7 @@ class App:
             ttk.Button(btns, text=text, command=cmd, width=len(text) + 2).pack(side="left", padx=2)
         btns2 = ttk.Frame(box)
         btns2.pack(fill="x", padx=6, pady=(0, 6))
-        for text, cmd in (("สลับ กด / หยุดบอท", self.toggle_action),
+        for text, cmd in (("สลับ กด / Space / หยุดบอท", self.toggle_action),
                           ("ล็อก / ปลดล็อกตำแหน่ง", self.toggle_local),
                           ("กดครั้งเดียว", self.toggle_once)):
             ttk.Button(btns2, text=text, command=cmd).pack(side="left", padx=2)
@@ -329,7 +330,7 @@ class App:
         self.tree.delete(*self.tree.get_children())
         for t in self.store.items:
             self.tree.insert("", "end", iid=t.name, values=(
-                t.name, "หยุดบอท" if t.action == "stop" else "กด", f"{t.threshold:.2f}",
+                t.name, ACTION_LABELS.get(t.action, "กด"), f"{t.threshold:.2f}",
                 "✓" if t.local and t.box else "", "✓" if t.once else "",
                 "✓" if t.count_round else "",
                 "✓" if t.enabled else "—"))
@@ -402,7 +403,8 @@ class App:
     def toggle_action(self):
         tpl = self.selected()
         if tpl:
-            tpl.action = "click" if tpl.action == "stop" else "stop"
+            # click -> Space key -> stop the bot -> click
+            tpl.action = {"click": "space", "space": "stop"}.get(tpl.action, "click")
             if tpl.action == "stop":
                 tpl.count_round = False
             self.store.save()

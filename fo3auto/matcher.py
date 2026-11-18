@@ -29,7 +29,7 @@ class Template:
     threshold: float = 0.85
     count_round: bool = False
     enabled: bool = True
-    action: str = "click"    # "click", or "stop" = halt the bot when seen
+    action: str = "click"    # "click", "space" = press Space instead, "stop" = halt the bot when seen
     box: list = None         # [x0, y0, x1, y1] where it was captured (base size)
     base_w: int = 0          # game client width when captured
     local: bool = False      # search only around `box` instead of the whole frame

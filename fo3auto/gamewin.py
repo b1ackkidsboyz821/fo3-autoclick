@@ -269,6 +269,31 @@ def click_background(hwnd, x, y):
     win32gui.PostMessage(hwnd, win32con.WM_LBUTTONUP, 0, lparam)
 
 
+VK_SPACE, SC_SPACE = 0x20, 0x39
+
+
+def space_background(hwnd):
+    """Post a Space key press to the window; keyboard focus stays where it is."""
+    down = 1 | (SC_SPACE << 16)
+    up = down | (1 << 30) | (1 << 31)
+    win32gui.PostMessage(hwnd, win32con.WM_KEYDOWN, VK_SPACE, down)
+    time.sleep(0.06)
+    win32gui.PostMessage(hwnd, win32con.WM_KEYUP, VK_SPACE, up)
+
+
+def space_foreground(hwnd):
+    """Real Space key: bring the window forward and press it (games that read the
+    keyboard directly ignore posted keys)."""
+    try:
+        win32gui.SetForegroundWindow(hwnd)
+    except Exception:
+        pass
+    time.sleep(0.08)
+    win32api.keybd_event(VK_SPACE, SC_SPACE, 0, 0)
+    time.sleep(0.06)
+    win32api.keybd_event(VK_SPACE, SC_SPACE, win32con.KEYEVENTF_KEYUP, 0)
+
+
 def click_foreground(hwnd, x, y):
     """Real click: bring the window forward, click, put the cursor back."""
     sx, sy = win32gui.ClientToScreen(hwnd, (int(x), int(y)))
