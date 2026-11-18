@@ -323,8 +323,13 @@ def space_foreground(hwnd):
     """Real Space key as a hardware scan code (what DirectInput games read), held
     long enough for a game that polls the keyboard once a frame. False when the
     game could not be brought forward (the key would land in another window)."""
+    was_front = user32.GetForegroundWindow() == hwnd
     if not bring_forward(hwnd):
         return False
+    if not was_front:
+        # a game that just got focus back re-acquires the keyboard on its next
+        # frames; a key pressed before that is lost
+        time.sleep(0.4)
     sent = _send_scan(SC_SPACE, False)
     time.sleep(0.12)
     sent += _send_scan(SC_SPACE, True)
