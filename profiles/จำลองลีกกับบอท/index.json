@@ -1,11 +1,88 @@
 [
   {
+    "name": "ยอมรับต่อสัญญา",
+    "file": "201e2613f8.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      759,
+      513,
+      842,
+      531
+    ],
+    "base_w": 1600,
+    "local": false,
+    "once": false
+  },
+  {
+    "name": "ต่อสัญญานักเตะ",
+    "file": "79218f76b8.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      814,
+      692,
+      900,
+      714
+    ],
+    "base_w": 1600,
+    "local": false,
+    "once": false
+  },
+  {
     "name": "จำลองการแข่ง",
     "file": "298952bfa1.png",
     "base_h": 750,
     "threshold": 0.85,
     "count_round": false,
-    "enabled": true
+    "enabled": true,
+    "action": "click",
+    "box": null,
+    "base_w": 0,
+    "local": false,
+    "once": false
+  },
+  {
+    "name": "โหมดมาสเตอร์ลีก",
+    "file": "1d461d32aa.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": true,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      519,
+      427,
+      794,
+      575
+    ],
+    "base_w": 1000,
+    "local": true,
+    "once": true
+  },
+  {
+    "name": "สปอนเก้าหมื่น",
+    "file": "c4f137af45.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      711,
+      429,
+      914,
+      512
+    ],
+    "base_w": 1000,
+    "local": true,
+    "once": false
   },
   {
     "name": "ผลแข่ง",
@@ -13,7 +90,12 @@
     "base_h": 750,
     "threshold": 0.85,
     "count_round": false,
-    "enabled": true
+    "enabled": true,
+    "action": "click",
+    "box": null,
+    "base_w": 0,
+    "local": false,
+    "once": false
   },
   {
     "name": "ต่อไป",
@@ -21,7 +103,12 @@
     "base_h": 750,
     "threshold": 0.85,
     "count_round": false,
-    "enabled": true
+    "enabled": true,
+    "action": "click",
+    "box": null,
+    "base_w": 0,
+    "local": false,
+    "once": false
   },
   {
     "name": "สุ่มเลือก",
@@ -29,7 +116,12 @@
     "base_h": 750,
     "threshold": 0.85,
     "count_round": false,
-    "enabled": true
+    "enabled": true,
+    "action": "click",
+    "box": null,
+    "base_w": 0,
+    "local": false,
+    "once": false
   },
   {
     "name": "ต่อไปสอง",
@@ -37,14 +129,60 @@
     "base_h": 750,
     "threshold": 0.85,
     "count_round": false,
-    "enabled": true
+    "enabled": true,
+    "action": "click",
+    "box": null,
+    "base_w": 0,
+    "local": false,
+    "once": false
+  },
+  {
+    "name": "ยอมรับบอลถ้วยในลีค",
+    "file": "dd73013cf9.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      1296,
+      835,
+      1352,
+      900
+    ],
+    "base_w": 1600,
+    "local": true,
+    "once": false
   },
   {
     "name": "ต่อไปสาม",
     "file": "eaf9a14f17.png",
     "base_h": 750,
     "threshold": 0.85,
-    "count_round": true,
-    "enabled": true
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": null,
+    "base_w": 0,
+    "local": false,
+    "once": false
+  },
+  {
+    "name": "ยอมรับเลเวลอัพ",
+    "file": "525ab22dc7.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      758,
+      707,
+      841,
+      738
+    ],
+    "base_w": 1600,
+    "local": false,
+    "once": false
   }
 ]

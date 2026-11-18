@@ -44,6 +44,10 @@ class Bot(threading.Thread):
         max_rounds = 0 if s.get("unlimited") else int(s.get("max_rounds", 0))
         last_progress = time.time()
         last_name, repeats = None, 0
+        # "Click once" buttons already pressed on this screen. A selection
+        # (e.g. a mode tile) stays visible after the click, so without this
+        # it would win every frame and the "next" button below it never would.
+        clicked_once = set()
 
         while not self.stop_event.is_set():
             hwnd = gamewin.find_game(s["process"])
@@ -61,7 +65,7 @@ class Bot(threading.Thread):
                 continue
 
             frame = gamewin.capture(hwnd)
-            hit = self.store.find_first(frame) if frame is not None else None
+            hit = self.store.find_first(frame, clicked_once) if frame is not None else None
 
             # Progress = a different button got clicked. Waiting on an empty
             # screen or hammering one button forever both count as stuck.
@@ -96,6 +100,10 @@ class Bot(threading.Thread):
                 gamewin.click_foreground(hwnd, x, y)
             self.emit("status", f"กด: {tpl.name}")
             self.emit("log", f"กด {tpl.name} ({score:.2f}) ที่ {x},{y}")
+            if tpl.once:
+                clicked_once.add(tpl.name)
+            else:
+                clicked_once.clear()   # moved on: allow them again next time
 
             # Count a round once per appearance of the button, not per click.
             if tpl.count_round and tpl.name != last_name:

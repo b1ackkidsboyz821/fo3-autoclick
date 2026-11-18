@@ -33,13 +33,14 @@ class Template:
     box: list = None         # [x0, y0, x1, y1] where it was captured (base size)
     base_w: int = 0          # game client width when captured
     local: bool = False      # search only around `box` instead of the whole frame
+    once: bool = False       # click once, then skip until another button is clicked
     gray: np.ndarray = field(default=None, repr=False, compare=False)
 
     def to_json(self):
         return {"name": self.name, "file": self.file, "base_h": self.base_h,
                 "threshold": self.threshold, "count_round": self.count_round,
                 "enabled": self.enabled, "action": self.action, "box": self.box,
-                "base_w": self.base_w, "local": self.local}
+                "base_w": self.base_w, "local": self.local, "once": self.once}
 
 
 class TemplateStore:
@@ -171,14 +172,14 @@ class TemplateStore:
         gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
         return [(t, *self.match(t, gray)) for t in self.items]
 
-    def find_first(self, frame_bgr):
-        """First enabled template that is on screen.
+    def find_first(self, frame_bgr, skip=()):
+        """First enabled template that is on screen, ignoring names in `skip`.
 
         "stop" templates are checked before any click, whatever their place
         in the list, so a guard screen always wins over a button on it.
         """
         gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
-        active = [t for t in self.items if t.enabled]
+        active = [t for t in self.items if t.enabled and t.name not in skip]
         ordered = ([t for t in active if t.action == "stop"]
                    + [t for t in active if t.action != "stop"])
         for tpl in ordered:

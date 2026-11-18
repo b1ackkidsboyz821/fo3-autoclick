@@ -5,6 +5,112 @@
     "base_h": 750,
     "threshold": 0.85,
     "count_round": false,
-    "enabled": true
+    "enabled": true,
+    "action": "click",
+    "box": null,
+    "base_w": 0,
+    "local": false
+  },
+  {
+    "name": "พร้อม",
+    "file": "6778ee2be2.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      1196,
+      856,
+      1340,
+      895
+    ],
+    "base_w": 1600,
+    "local": true
+  },
+  {
+    "name": "พร้อมก่อนเข้าแมต",
+    "file": "f72ca55de6.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      1195,
+      852,
+      1344,
+      890
+    ],
+    "base_w": 1600,
+    "local": true
+  },
+  {
+    "name": "SKIP SPACE",
+    "file": "53330af9eb.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      45,
+      839,
+      232,
+      885
+    ],
+    "base_w": 1600,
+    "local": true
+  },
+  {
+    "name": "ต่อไปหลังจบแมต",
+    "file": "160dc4b00c.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      1202,
+      853,
+      1348,
+      895
+    ],
+    "base_w": 1600,
+    "local": true
+  },
+  {
+    "name": "สุ่มเลือกจบแมต",
+    "file": "dc07f619f6.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      1206,
+      859,
+      1345,
+      892
+    ],
+    "base_w": 1600,
+    "local": true
+  },
+  {
+    "name": "กดต่อ",
+    "file": "5c1c70536d.png",
+    "base_h": 900,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      336,
+      654,
+      490,
+      777
+    ],
+    "base_w": 1600,
+    "local": true
   }
 ]

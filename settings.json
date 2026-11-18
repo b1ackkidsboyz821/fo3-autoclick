@@ -1,0 +1,10 @@
+{
+  "process": "fifazf",
+  "max_rounds": 150,
+  "unlimited": true,
+  "click_mode": "background",
+  "interval": 0.6,
+  "after_click": 1.0,
+  "stuck_seconds": 300,
+  "profile": "จำลองลีกกับบอท"
+}
