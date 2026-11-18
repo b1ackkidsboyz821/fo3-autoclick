@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>FO3 Auto Clicker</title>
+<style>
+  :root {
+    --bg: #07110d;
+    --bg-2: #0c1a14;
+    --panel: #102219;
+    --panel-2: #142b20;
+    --line: #1f3d2e;
+    --line-2: #2a5240;
+    --ink: #e7f5ec;
+    --ink-2: #a9c7b5;
+    --ink-3: #6f9480;
+    --green: #2fd67b;
+    --green-2: #1fb865;
+    --green-ink: #04150c;
+    --glow: rgba(47, 214, 123, .28);
+    --amber: #f5c84b;
+    --red: #ff6b6b;
+    --blue: #5cc8ff;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: radial-gradient(1200px 600px at 10% -10%, #123323 0%, transparent 60%),
+                radial-gradient(900px 500px at 110% 110%, #0f2a1d 0%, transparent 55%), var(--bg);
+    color: var(--ink);
+    font: 14px/1.45 "Leelawadee UI", "Segoe UI", system-ui, sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+
+  .app { display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 20px; border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(16,34,25,.9), rgba(12,26,20,.6));
+  }
+  .logo {
+    width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--green), #129a52);
+    box-shadow: 0 0 18px var(--glow); color: var(--green-ink); font-weight: 800;
+  }
+  .brand b { display: block; font-size: 16px; letter-spacing: .2px; }
+  .brand span { color: var(--ink-3); font-size: 12px; }
+  .spacer { flex: 1; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
+    border-radius: 999px; border: 1px solid var(--line-2); background: var(--panel);
+    font-size: 13px; color: var(--ink-2); white-space: nowrap;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+  .pill.ok .dot { background: var(--green); box-shadow: 0 0 10px var(--green); }
+  .pill.admin { color: var(--green); border-color: rgba(47,214,123,.45); }
+
+  /* ---------- layout ---------- */
+  main {
+    display: grid; grid-template-columns: 340px 1fr; gap: 16px;
+    padding: 16px 20px 20px; min-height: 0;
+  }
+  .col { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+  .card {
+    background: linear-gradient(180deg, var(--panel), var(--bg-2));
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 14px;
+  }
+  .card h3 {
+    margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .8px;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .row + .row { margin-top: 10px; }
+  .grow { flex: 1; min-width: 0; }
+
+  /* ---------- controls ---------- */
+  .btn {
+    border: 1px solid var(--line-2); background: var(--panel-2); color: var(--ink);
+    border-radius: 10px; padding: 7px 12px; transition: .15s;
+  }
+  .btn:hover { border-color: var(--green); color: var(--green); }
+  .btn:disabled { opacity: .45; pointer-events: none; }
+  .btn.primary {
+    background: linear-gradient(135deg, var(--green), var(--green-2)); color: var(--green-ink);
+    border-color: transparent; font-weight: 700;
+  }
+  .btn.primary:hover { box-shadow: 0 0 16px var(--glow); color: var(--green-ink); }
+  .btn.ghost { background: transparent; }
+  .btn.danger:hover { border-color: var(--red); color: var(--red); }
+  .icon-btn { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; }
+  select, input[type=number], input[type=text] {
+    background: var(--bg); border: 1px solid var(--line-2); border-radius: 10px;
+    padding: 7px 10px; outline: none; min-width: 0;
+  }
+  select:focus, input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(47,214,123,.15); }
+  select { appearance: none; padding-right: 28px; cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink-3) 50%),
+                      linear-gradient(135deg, var(--ink-3) 50%, transparent 50%);
+    background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%;
+    background-size: 5px 5px; background-repeat: no-repeat; }
+  input[type=number] { width: 90px; }
+  input:disabled { opacity: .4; }
+
+  .switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; color: var(--ink-2); }
+  .switch input { display: none; }
+  .switch i {
+    width: 38px; height: 22px; border-radius: 999px; background: #22382c; position: relative;
+    transition: .2s; flex: none; border: 1px solid var(--line-2);
+  }
+  .switch i::after {
+    content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+    border-radius: 50%; background: #9db8a8; transition: .2s;
+  }
+  .switch input:checked + i { background: rgba(47,214,123,.25); border-color: var(--green); }
+  .switch input:checked + i::after { left: 18px; background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+  .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border: 1px solid var(--line-2);
+    border-radius: 10px; padding: 3px; gap: 3px; width: 100%; }
+  .seg button { border: 0; background: transparent; border-radius: 8px; padding: 7px 6px; color: var(--ink-2); font-size: 13px; }
+  .seg button.on { background: var(--panel-2); color: var(--green); box-shadow: inset 0 0 0 1px rgba(47,214,123,.4); }
+
+  /* ---------- hero ---------- */
+  .hero { text-align: center; padding: 20px 16px 16px; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: -40% -20% auto; height: 220px;
+    background: radial-gradient(closest-side, rgba(47,214,123,.16), transparent);
+    pointer-events: none;
+  }
+  .rounds { font-size: 56px; font-weight: 800; line-height: 1; letter-spacing: -1px; position: relative; }
+  .rounds small { font-size: 22px; color: var(--ink-3); font-weight: 600; }
+  .rounds-label { color: var(--ink-3); font-size: 12px; margin-top: 4px; letter-spacing: .6px; }
+  .status { margin: 12px 0 14px; color: var(--ink-2); min-height: 21px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
+  .start {
+    width: 100%; padding: 14px; font-size: 17px; border-radius: 12px; font-weight: 800;
+    border: 0; color: var(--green-ink); background: linear-gradient(135deg, #39e488, #17a85a);
+    box-shadow: 0 6px 24px rgba(31,184,101,.35); transition: .2s; position: relative;
+  }
+  .start:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(31,184,101,.45); }
+  .start.stop { background: linear-gradient(135deg, #ff7d7d, #d94848); box-shadow: 0 6px 24px rgba(217,72,72,.35); color: #fff; }
+  .start kbd { font: 600 11px "Segoe UI"; padding: 2px 6px; border-radius: 6px; margin-left: 8px;
+    background: rgba(0,0,0,.18); }
+  .running-bar { height: 3px; border-radius: 3px; margin-top: 12px; background: var(--line); overflow: hidden; opacity: 0; transition: .3s; }
+  .running-bar.on { opacity: 1; }
+  .running-bar span { display: block; height: 100%; width: 35%; background: var(--green);
+    box-shadow: 0 0 10px var(--green); animation: slide 1.4s ease-in-out infinite; }
+  @keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
+
+  /* ---------- buttons list ---------- */
+  .list-card { display: flex; flex-direction: column; min-height: 0; flex: 2.2; }
+  .list { overflow: auto; margin: 0 -6px; padding: 0 6px; flex: 1; min-height: 120px; }
+  .item {
+    display: grid; grid-template-columns: 26px 64px 1fr auto; align-items: center; gap: 12px;
+    padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: rgba(7,17,13,.55);
+    transition: .15s;
+  }
+  .item + .item { margin-top: 8px; }
+  .item:hover { border-color: var(--line-2); background: rgba(20,43,32,.6); }
+  .item.off { opacity: .5; }
+  .prio { color: var(--ink-3); font-weight: 700; text-align: center; font-size: 13px; }
+  .thumb { width: 64px; height: 36px; border-radius: 7px; background: #000 center/contain no-repeat;
+    border: 1px solid var(--line-2); }
+  .iname { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+  .chip {
+    font-size: 11.5px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line-2);
+    background: transparent; color: var(--ink-3); transition: .15s;
+  }
+  .chip:hover { border-color: var(--green); color: var(--ink); }
+  .chip.on { color: var(--green); border-color: rgba(47,214,123,.5); background: rgba(47,214,123,.08); }
+  .chip.act-click { color: var(--green); border-color: rgba(47,214,123,.5); }
+  .chip.act-space { color: var(--blue); border-color: rgba(92,200,255,.5); background: rgba(92,200,255,.08); }
+  .chip.act-stop { color: var(--red); border-color: rgba(255,107,107,.5); background: rgba(255,107,107,.08); }
+  .chip.thr { color: var(--amber); border-color: rgba(245,200,75,.4); }
+  .tools { display: flex; align-items: center; gap: 4px; }
+  .mini { width: 28px; height: 28px; border-radius: 8px; border: 1px solid transparent; background: transparent;
+    color: var(--ink-3); display: grid; place-items: center; }
+  .mini:hover { border-color: var(--line-2); color: var(--ink); background: var(--panel-2); }
+  .mini.danger:hover { color: var(--red); border-color: rgba(255,107,107,.5); }
+  .empty { text-align: center; color: var(--ink-3); padding: 34px 10px; border: 1px dashed var(--line-2); border-radius: 12px; }
+
+  /* ---------- log ---------- */
+  .log-card { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+  .log {
+    flex: 1; min-height: 80px; overflow: auto; background: #050d09; border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 12px; font: 12.5px/1.6 "Cascadia Mono", Consolas, "Leelawadee UI", monospace;
+    color: #b8d8c5; user-select: text; white-space: pre-wrap; word-break: break-word;
+  }
+  .log div::selection, .log::selection { background: rgba(47,214,123,.35); }
+  .log .t { color: var(--ink-3); }
+
+  /* ---------- modal ---------- */
+  .modal { position: fixed; inset: 0; background: rgba(2,8,5,.72); backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center; z-index: 50; padding: 24px; }
+  .modal.on { display: flex; }
+  .dialog { background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; padding: 20px;
+    width: min(420px, 100%); box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  .dialog h2 { margin: 0 0 6px; font-size: 18px; }
+  .dialog p { margin: 0 0 14px; color: var(--ink-2); }
+  .dialog input[type=text], .dialog input[type=number] { width: 100%; }
+  .dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+  .cap { width: min(1400px, 100%); max-height: 100%; display: flex; flex-direction: column; padding: 16px; }
+  .cap-stage { position: relative; align-self: center; max-width: 100%; min-height: 0; flex: 1;
+    display: flex; justify-content: center; }
+  .cap-stage img { max-width: 100%; max-height: calc(100vh - 230px); display: block; border-radius: 10px;
+    cursor: crosshair; user-select: none; -webkit-user-drag: none; }
+  .cap-box { position: absolute; border: 2px solid var(--green); background: rgba(47,214,123,.12);
+    box-shadow: 0 0 0 9999px rgba(0,0,0,.35), 0 0 14px var(--green); border-radius: 4px; pointer-events: none; display: none; }
+  .cap-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 14px; }
+  .cap-bar input[type=text] { width: 220px; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0;
+    background: #1d1010; border: 1px solid rgba(255,107,107,.5); color: #ffd6d6; padding: 10px 16px;
+    border-radius: 12px; transition: .25s; z-index: 80; max-width: 80%; box-shadow: 0 12px 40px rgba(0,0,0,.4); }
+  .toast.ok { background: #0d2018; border-color: rgba(47,214,123,.5); color: #d4f7e3; }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #1f3d2e; border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+  ::-webkit-scrollbar-thumb:hover { background: #2a5240; background-clip: padding-box; border: 2px solid transparent; }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  @media (max-width: 900px) {
+    body { overflow: auto; }
+    .app { height: auto; min-height: 100vh; }
+    main { grid-template-columns: 1fr; }
+    .list { max-height: 50vh; }
+    .log { min-height: 180px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">FO</div>
+    <div class="brand"><b>FO3 Auto Clicker</b><span>ช่วยกดปุ่มในเกมอัตโนมัติ</span></div>
+    <div class="spacer"></div>
+    <span class="pill" id="game"><span class="dot"></span><span id="gameText">กำลังหาเกม…</span></span>
+    <span id="adminSlot"></span>
+  </header>
+
+  <main>
+    <div class="col">
+      <section class="card">
+        <h3>โหมด</h3>
+        <div class="row">
+          <select id="profile" class="grow"></select>
+          <button class="btn icon-btn" title="โหมดใหม่" onclick="ui.newProfile()">＋</button>
+          <button class="btn icon-btn" title="เปลี่ยนชื่อ" onclick="ui.renameProfile()">✎</button>
+          <button class="btn icon-btn danger" title="ลบโหมด" onclick="ui.deleteProfile()">🗑</button>
+        </div>
+      </section>
+
+      <section class="card hero">
+        <div class="rounds" id="rounds">0</div>
+        <div class="rounds-label">รอบที่เล่นแล้ว</div>
+        <div class="status" id="status">พร้อมใช้งาน</div>
+        <button class="start" id="start" onclick="ui.toggleRun()">▶ เริ่มทำงาน<kbd>F8</kbd></button>
+        <div class="running-bar" id="runbar"><span></span></div>
+      </section>
+
+      <section class="card">
+        <h3>ตั้งค่า</h3>
+        <div class="row">
+          <span class="grow" style="color:var(--ink-2)">จำนวนรอบ</span>
+          <input type="number" id="maxRounds" min="1" max="9999">
+          <label class="switch"><input type="checkbox" id="unlimited"><i></i>ไม่จำกัด</label>
+        </div>
+        <div class="row" style="flex-direction:column;align-items:stretch;gap:6px">
+          <span style="color:var(--ink-2)">วิธีคลิก</span>
+          <div class="seg" id="mode">
+            <button data-v="background">เบื้องหลัง · ไม่ขยับเมาส์</button>
+            <button data-v="foreground">คลิกจริง · ขยับเมาส์</button>
+          </div>
+        </div>
+        <div class="row">
+          <label class="switch"><input type="checkbox" id="hide"><i></i>ซ่อนหน้าต่างเกม (ใช้โปรแกรมอื่นต่อได้)</label>
+        </div>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="card list-card">
+        <div class="row" style="margin-bottom:12px">
+          <h3 class="grow" style="margin:0">ปุ่มที่ให้กด · บนสุดสำคัญสุด</h3>
+          <button class="btn ghost" onclick="ui.test()">ทดสอบ</button>
+          <button class="btn primary" onclick="ui.capture()">＋ เพิ่มจากจอเกม</button>
+        </div>
+        <div class="list" id="list"></div>
+      </section>
+
+      <section class="card log-card">
+        <div class="row" style="margin-bottom:10px">
+          <h3 class="grow" style="margin:0">Log</h3>
+          <button class="btn ghost" onclick="ui.copyLog()">คัดลอกทั้งหมด</button>
+          <button class="btn ghost" onclick="ui.clearLog()">ล้าง</button>
+        </div>
+        <div class="log" id="log"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- generic prompt / confirm -->
+<div class="modal" id="dlg">
+  <div class="dialog">
+    <h2 id="dlgTitle"></h2>
+    <p id="dlgText"></p>
+    <input type="text" id="dlgInput">
+    <div class="actions">
+      <button class="btn ghost" id="dlgCancel">ยกเลิก</button>
+      <button class="btn primary" id="dlgOk">ตกลง</button>
+    </div>
+  </div>
+</div>
+
+<!-- capture a button from a game screenshot -->
+<div class="modal" id="capModal">
+  <div class="dialog cap">
+    <div class="row" style="margin-bottom:12px">
+      <h2 class="grow" style="margin:0">ลากกรอบรอบปุ่มที่ต้องการให้กด</h2>
+      <span id="capSize" style="color:var(--ink-3)"></span>
+    </div>
+    <div class="cap-stage" id="capStage">
+      <img id="capImg" alt="">
+      <div class="cap-box" id="capBox"></div>
+    </div>
+    <div class="cap-bar">
+      <input type="text" id="capName" placeholder="ชื่อปุ่ม">
+      <label class="switch"><input type="checkbox" id="capCount"><i></i>กดปุ่มนี้ = นับ 1 รอบ</label>
+      <label class="switch"><input type="checkbox" id="capStop"><i></i>เจอภาพนี้ให้หยุดบอท</label>
+      <label class="switch"><input type="checkbox" id="capLocal" checked><i></i>หาเฉพาะตำแหน่งนี้</label>
+      <div class="spacer"></div>
+      <button class="btn ghost" onclick="ui.closeCapture()">ยกเลิก</button>
+      <button class="btn primary" onclick="ui.saveCapture()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const ACTION = { click: "กด", space: "Space", stop: "หยุดบอท" };
+const S = { items: [], settings: {}, running: false, maxRounds: 10 };
+const api = () => window.pywebview.api;
+
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+let toastTimer;
+function toast(text, ok) {
+  const t = $("toast");
+  t.textContent = text; t.className = "toast on" + (ok ? " ok" : "");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.className = "toast" + (ok ? " ok" : "")), 3200);
+}
+// every API reply goes through here: {error} -> toast, else the value
+async function call(name, ...args) {
+  try {
+    const r = await api()[name](...args);
+    if (r && !Array.isArray(r) && r.error) { toast(r.error); return null; }
+    return r;
+  } catch (e) { toast(String(e && e.message || e)); return null; }
+}
+
+// ---------- small dialogs ----------
+function dialog({ title, text = "", input = null, okText = "ตกลง", danger = false }) {
+  return new Promise((resolve) => {
+    $("dlgTitle").textContent = title; $("dlgText").textContent = text;
+    const inp = $("dlgInput"); inp.style.display = input === null ? "none" : "";
+    inp.value = input ?? "";
+    const ok = $("dlgOk"); ok.textContent = okText;
+    ok.style.background = danger ? "linear-gradient(135deg,#ff7d7d,#d94848)" : ""; ok.style.color = danger ? "#fff" : "";
+    $("dlg").classList.add("on");
+    if (input !== null) setTimeout(() => { inp.focus(); inp.select(); }, 30);
+    const done = (v) => { $("dlg").classList.remove("on"); ok.onclick = $("dlgCancel").onclick = inp.onkeydown = null; resolve(v); };
+    ok.onclick = () => done(input === null ? true : inp.value);
+    $("dlgCancel").onclick = () => done(null);
+    inp.onkeydown = (e) => { if (e.key === "Enter") ok.onclick(); if (e.key === "Escape") done(null); };
+  });
+}
+
+// ---------- render ----------
+function renderProfiles(list, cur) {
+  $("profile").innerHTML = list.map((n) => `<option ${n === cur ? "selected" : ""}>${esc(n)}</option>`).join("");
+}
+function renderSettings(s) {
+  S.settings = s;
+  $("maxRounds").value = s.max_rounds; $("unlimited").checked = s.unlimited;
+  $("maxRounds").disabled = s.unlimited;
+  document.querySelectorAll("#mode button").forEach((b) => b.classList.toggle("on", b.dataset.v === s.click_mode));
+}
+function renderItems(items) {
+  if (!Array.isArray(items)) return;
+  S.items = items;
+  const list = $("list");
+  if (!items.length) {
+    list.innerHTML = `<div class="empty">ยังไม่มีปุ่ม<br>เปิดหน้าเกมที่มีปุ่มนั้นแล้วกด “＋ เพิ่มจากจอเกม”</div>`;
+    return;
+  }
+  list.innerHTML = items.map((t, i) => {
+    const n = esc(t.name);
+    return `<div class="item ${t.enabled ? "" : "off"}" data-name="${n}">
+      <div class="prio">${i + 1}</div>
+      <div class="thumb" style="background-image:url('${t.thumb || ""}')"></div>
+      <div style="min-width:0">
+        <div class="iname" title="${n}">${n}</div>
+        <div class="chips">
+          <button class="chip act-${t.action}" data-f="action" title="สลับ กด → Space → หยุดบอท">${ACTION[t.action] || "กด"}</button>
+          <button class="chip thr" data-f="threshold" title="ความแม่น (ยิ่งสูงยิ่งเข้มงวด)">แม่น ${t.threshold.toFixed(2)}</button>
+          <button class="chip ${t.local ? "on" : ""}" data-f="local" title="ค้นเฉพาะตำแหน่งที่จับภาพไว้">${t.local ? "🔒 ล็อกตำแหน่ง" : "ทั้งจอ"}</button>
+          <button class="chip ${t.once ? "on" : ""}" data-f="once" title="กดครั้งเดียวต่อหน้าจอ">ครั้งเดียว</button>
+          <button class="chip ${t.count_round ? "on" : ""}" data-f="count_round" title="กดปุ่มนี้ = นับ 1 รอบ">นับรอบ</button>
+        </div>
+      </div>
+      <div class="tools">
+        <label class="switch" title="เปิด/ปิดปุ่มนี้"><input type="checkbox" data-f="enabled" ${t.enabled ? "checked" : ""}><i></i></label>
+        <button class="mini" data-move="-1" title="เลื่อนขึ้น" ${i === 0 ? "disabled" : ""}>▲</button>
+        <button class="mini" data-move="1" title="เลื่อนลง" ${i === items.length - 1 ? "disabled" : ""}>▼</button>
+        <button class="mini danger" data-del title="ลบ">✕</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+function renderRounds(v) {
+  const s = S.settings;
+  $("rounds").innerHTML = s.unlimited ? `${v}` : `${v}<small> / ${s.max_rounds}</small>`;
+}
+function renderRunning(on) {
+  S.running = on;
+  const b = $("start");
+  b.classList.toggle("stop", on);
+  b.innerHTML = on ? "■ หยุด<kbd>F8</kbd>" : "▶ เริ่มทำงาน<kbd>F8</kbd>";
+  $("runbar").classList.toggle("on", on);
+  $("profile").disabled = on;
+}
+function renderGame(g) {
+  const el = $("game");
+  el.classList.toggle("ok", !!g.found);
+  $("gameText").textContent = g.found ? `พบเกม ${g.w}×${g.h}${g.hidden ? " · ซ่อนอยู่" : ""}` : "ไม่พบเกม";
+}
+function addLog(line) {
+  const log = $("log");
+  const stick = log.scrollTop + log.clientHeight >= log.scrollHeight - 8;
+  const d = document.createElement("div");
+  const m = /^(\d\d:\d\d:\d\d)\s+(.*)$/s.exec(line);
+  if (m) { const t = document.createElement("span"); t.className = "t"; t.textContent = m[1] + "  "; d.append(t, m[2]); }
+  else d.textContent = line;
+  log.append(d);
+  while (log.children.length > 300) log.firstChild.remove();
+  if (stick) log.scrollTop = log.scrollHeight;
+}
+
+// ---------- events from Python ----------
+window.fo3 = {
+  event(kind, v) {
+    if (kind === "log") addLog(v);
+    else if (kind === "status") $("status").textContent = v;
+    else if (kind === "round") renderRounds(v);
+    else if (kind === "running") { renderRunning(v); if (v) $("status").textContent = "กำลังทำงาน"; }
+    else if (kind === "hidden") $("hide").checked = v;
+    else if (kind === "game") renderGame(v);
+    else if (kind === "toast") toast(v);
+  },
+};
+
+// ---------- actions ----------
+const ui = {
+  async load() {
+    const s = await call("state");
+    if (!s) return;
+    renderProfiles(s.profiles, s.profile); renderSettings(s.settings); renderItems(s.items);
+    renderRunning(s.running); renderGame(s.game); renderRounds(0); $("hide").checked = s.hidden;
+    $("adminSlot").innerHTML = s.admin ? `<span class="pill admin">✓ Admin</span>`
+      : `<button class="btn" onclick="ui.admin()">เปิดใหม่แบบ Admin</button>`;
+  },
+  applyState(s) { if (!s) return; renderProfiles(s.profiles, s.profile); renderSettings(s.settings); renderItems(s.items); },
+  async newProfile() {
+    const name = await dialog({ title: "โหมดใหม่", text: "ตั้งชื่อโหมด (ชุดปุ่มแยกตามโหมดเกม)", input: "" });
+    if (name !== null) this.applyState(await call("new_profile", name));
+  },
+  async renameProfile() {
+    const name = await dialog({ title: "เปลี่ยนชื่อโหมด", input: $("profile").value });
+    if (name !== null) this.applyState(await call("rename_profile", name));
+  },
+  async deleteProfile() {
+    const name = $("profile").value;
+    if (await dialog({ title: "ลบโหมด", text: `ลบโหมด “${name}” พร้อมปุ่ม ${S.items.length} ปุ่ม? กู้คืนไม่ได้`, okText: "ลบ", danger: true }))
+      this.applyState(await call("delete_profile"));
+  },
+  async toggleRun() {
+    const r = await call("toggle_run");
+    if (r) renderRunning(r.running);
+  },
+  async test() { if (await call("test")) toast("ดูผลทดสอบใน Log", true); },
+  async admin() { await call("relaunch_admin"); },
+  copyLog() {
+    const text = [...$("log").children].map((d) => d.textContent).join("\n");
+    navigator.clipboard.writeText(text).then(() => toast("คัดลอก Log แล้ว", true), () => toast("คัดลอกไม่ได้"));
+  },
+  clearLog() { $("log").innerHTML = ""; },
+
+  // capture
+  cap: null,
+  async capture() {
+    const r = await call("capture");
+    if (!r) return;
+    this.cap = { w: r.w, h: r.h, box: null };
+    $("capImg").src = r.img; $("capSize").textContent = `${r.w}×${r.h}`;
+    $("capBox").style.display = "none"; $("capName").value = "";
+    $("capCount").checked = false; $("capStop").checked = false; $("capLocal").checked = true;
+    $("capModal").classList.add("on");
+  },
+  closeCapture() { $("capModal").classList.remove("on"); this.cap = null; },
+  async saveCapture() {
+    const c = this.cap;
+    if (!c || !c.box) return toast("ลากกรอบรอบปุ่มก่อน");
+    if (!$("capName").value.trim()) { $("capName").focus(); return toast("ตั้งชื่อปุ่มก่อน"); }
+    const items = await call("save_capture", $("capName").value, c.box, $("capCount").checked, $("capStop").checked, $("capLocal").checked);
+    if (items) { renderItems(items); this.closeCapture(); toast("เพิ่มปุ่มแล้ว", true); }
+  },
+};
+
+// list: chips, switches, move, delete
+$("list").addEventListener("click", async (e) => {
+  const item = e.target.closest(".item"); if (!item) return;
+  const name = item.dataset.name;   // the browser already decoded the entities
+  const chip = e.target.closest("[data-f]"), mv = e.target.closest("[data-move]"), del = e.target.closest("[data-del]");
+  if (chip && chip.tagName === "BUTTON") {
+    const f = chip.dataset.f;
+    if (f === "threshold") {
+      const t = S.items.find((x) => x.name === name);
+      const v = await dialog({ title: "ความแม่น", text: "0.50 – 0.99 (ยิ่งสูงยิ่งเข้มงวด ค่าปกติ 0.85)", input: t.threshold.toFixed(2) });
+      if (v !== null) renderItems(await call("set_threshold", name, v));
+    } else renderItems(await call("toggle", name, f));
+  } else if (mv) renderItems(await call("move", name, Number(mv.dataset.move)));
+  else if (del) {
+    if (await dialog({ title: "ลบปุ่ม", text: `ลบปุ่ม “${name}”?`, okText: "ลบ", danger: true })) renderItems(await call("delete", name));
+  }
+});
+$("list").addEventListener("change", async (e) => {
+  if (e.target.dataset.f !== "enabled") return;
+  const item = e.target.closest(".item");
+  const name = S.items[[...$("list").children].indexOf(item)].name;
+  renderItems(await call("toggle", name, "enabled"));
+});
+
+$("profile").addEventListener("change", async (e) => {
+  const s = await call("select_profile", e.target.value);
+  if (s) ui.applyState(s); else ui.load();
+});
+$("maxRounds").addEventListener("change", async (e) => {
+  if (await call("set_option", "max_rounds", e.target.value)) { S.settings.max_rounds = Math.max(1, Math.min(9999, parseInt(e.target.value) || 1)); e.target.value = S.settings.max_rounds; renderRounds(0); }
+});
+$("unlimited").addEventListener("change", async (e) => {
+  await call("set_option", "unlimited", e.target.checked);
+  S.settings.unlimited = e.target.checked; $("maxRounds").disabled = e.target.checked; renderRounds(0);
+});
+$("mode").addEventListener("click", async (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (await call("set_option", "click_mode", b.dataset.v)) renderSettings({ ...S.settings, click_mode: b.dataset.v });
+});
+$("hide").addEventListener("change", async (e) => {
+  const r = await call("set_hide", e.target.checked);
+  if (!r) e.target.checked = !e.target.checked;
+});
+
+// capture: drag a box on the screenshot (stored in game pixels)
+(() => {
+  const img = $("capImg"), box = $("capBox");
+  let start = null;
+  const pt = (e) => {
+    const r = img.getBoundingClientRect();
+    return { x: Math.max(0, Math.min(r.width, e.clientX - r.left)), y: Math.max(0, Math.min(r.height, e.clientY - r.top)), r };
+  };
+  const draw = (a, b) => {
+    const x = Math.min(a.x, b.x), y = Math.min(a.y, b.y), w = Math.abs(a.x - b.x), h = Math.abs(a.y - b.y);
+    const stage = $("capStage").getBoundingClientRect();
+    Object.assign(box.style, { display: "block", left: a.r.left - stage.left + x + "px", top: a.r.top - stage.top + y + "px", width: w + "px", height: h + "px" });
+    const k = ui.cap.w / a.r.width;
+    ui.cap.box = [x * k, y * k, (x + w) * k, (y + h) * k].map(Math.round);
+  };
+  img.addEventListener("mousedown", (e) => { e.preventDefault(); start = pt(e); draw(start, start); });
+  window.addEventListener("mousemove", (e) => { if (start) draw(start, pt(e)); });
+  window.addEventListener("mouseup", () => { start = null; });
+})();
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && $("capModal").classList.contains("on")) ui.closeCapture();
+  if (e.key === "Enter" && $("capModal").classList.contains("on") && document.activeElement === $("capName")) ui.saveCapture();
+});
+document.addEventListener("contextmenu", (e) => { if (!e.target.closest(".log")) e.preventDefault(); });
+
+window.addEventListener("pywebviewready", () => ui.load());
+</script>
+</body>
+</html>
