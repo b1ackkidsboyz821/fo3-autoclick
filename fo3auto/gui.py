@@ -287,10 +287,11 @@ class App:
 
         box = ttk.LabelFrame(root, text="ปุ่มที่ให้กด (บนสุด = สำคัญสุด)")
         box.pack(fill="both", expand=True, **pad)
-        cols = ("name", "kind", "thr", "local", "round", "on")
+        cols = ("name", "kind", "thr", "local", "once", "round", "on")
         self.tree = ttk.Treeview(box, columns=cols, show="headings", height=7, selectmode="browse")
         for col, text, width in (("name", "ชื่อปุ่ม", 170), ("kind", "เมื่อเจอ", 70),
                                  ("thr", "ความแม่น", 70), ("local", "ล็อกตำแหน่ง", 90),
+                                 ("once", "ครั้งเดียว", 70),
                                  ("round", "นับรอบ", 60), ("on", "เปิดใช้", 60)):
             self.tree.heading(col, text=text)
             self.tree.column(col, width=width, anchor="w" if col == "name" else "center")
@@ -305,7 +306,8 @@ class App:
         btns2 = ttk.Frame(box)
         btns2.pack(fill="x", padx=6, pady=(0, 6))
         for text, cmd in (("สลับ กด / หยุดบอท", self.toggle_action),
-                          ("ล็อก / ปลดล็อกตำแหน่ง", self.toggle_local)):
+                          ("ล็อก / ปลดล็อกตำแหน่ง", self.toggle_local),
+                          ("กดครั้งเดียว", self.toggle_once)):
             ttk.Button(btns2, text=text, command=cmd).pack(side="left", padx=2)
 
         self.start_btn = ttk.Button(root, text="▶ เริ่มทำงาน (F8)", style="Big.TButton", command=self.toggle)
@@ -328,7 +330,8 @@ class App:
         for t in self.store.items:
             self.tree.insert("", "end", iid=t.name, values=(
                 t.name, "หยุดบอท" if t.action == "stop" else "กด", f"{t.threshold:.2f}",
-                "✓" if t.local and t.box else "", "✓" if t.count_round else "",
+                "✓" if t.local and t.box else "", "✓" if t.once else "",
+                "✓" if t.count_round else "",
                 "✓" if t.enabled else "—"))
         if selected and self.tree.exists(selected):
             self.tree.selection_set(selected)
@@ -386,6 +389,13 @@ class App:
         tpl = self.selected()
         if tpl:
             tpl.count_round = not tpl.count_round
+            self.store.save()
+            self.refresh_list()
+
+    def toggle_once(self):
+        tpl = self.selected()
+        if tpl:
+            tpl.once = not tpl.once
             self.store.save()
             self.refresh_list()
 

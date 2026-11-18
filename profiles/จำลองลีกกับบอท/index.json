@@ -14,7 +14,8 @@
       531
     ],
     "base_w": 1600,
-    "local": false
+    "local": false,
+    "once": false
   },
   {
     "name": "ต่อสัญญานักเตะ",
@@ -31,7 +32,8 @@
       714
     ],
     "base_w": 1600,
-    "local": false
+    "local": false,
+    "once": false
   },
   {
     "name": "จำลองการแข่ง",
@@ -43,19 +45,57 @@
     "action": "click",
     "box": null,
     "base_w": 0,
-    "local": false
+    "local": false,
+    "once": false
+  },
+  {
+    "name": "โหมดมาสเตอร์ลีก",
+    "file": "1d461d32aa.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": true,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      519,
+      427,
+      794,
+      575
+    ],
+    "base_w": 1000,
+    "local": true,
+    "once": true
+  },
+  {
+    "name": "สปอนเก้าหมื่น",
+    "file": "c4f137af45.png",
+    "base_h": 750,
+    "threshold": 0.85,
+    "count_round": false,
+    "enabled": true,
+    "action": "click",
+    "box": [
+      711,
+      429,
+      914,
+      512
+    ],
+    "base_w": 1000,
+    "local": true,
+    "once": false
   },
   {
     "name": "ผลแข่ง",
     "file": "6f3ffd7cc5.png",
     "base_h": 750,
     "threshold": 0.85,
-    "count_round": true,
+    "count_round": false,
     "enabled": true,
     "action": "click",
     "box": null,
     "base_w": 0,
-    "local": false
+    "local": false,
+    "once": false
   },
   {
     "name": "ต่อไป",
@@ -67,7 +107,8 @@
     "action": "click",
     "box": null,
     "base_w": 0,
-    "local": false
+    "local": false,
+    "once": false
   },
   {
     "name": "สุ่มเลือก",
@@ -79,7 +120,8 @@
     "action": "click",
     "box": null,
     "base_w": 0,
-    "local": false
+    "local": false,
+    "once": false
   },
   {
     "name": "ต่อไปสอง",
@@ -91,7 +133,8 @@
     "action": "click",
     "box": null,
     "base_w": 0,
-    "local": false
+    "local": false,
+    "once": false
   },
   {
     "name": "ยอมรับบอลถ้วยในลีค",
@@ -108,7 +151,8 @@
       900
     ],
     "base_w": 1600,
-    "local": true
+    "local": true,
+    "once": false
   },
   {
     "name": "ต่อไปสาม",
@@ -120,7 +164,8 @@
     "action": "click",
     "box": null,
     "base_w": 0,
-    "local": false
+    "local": false,
+    "once": false
   },
   {
     "name": "ยอมรับเลเวลอัพ",
@@ -137,6 +182,7 @@
       738
     ],
     "base_w": 1600,
-    "local": false
+    "local": false,
+    "once": false
   }
 ]
